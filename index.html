@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundry — Allmer Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #080808; color: #e8e4dc; font-family: 'Courier Prime', monospace; }
+  .brand-font { font-family: 'Cinzel', serif; }
+
+  .status-done     { background: #4a7c59; box-shadow: 0 0 8px #4a7c5966; }
+  .status-progress { background: #b8860b; box-shadow: 0 0 8px #b8860b66; }
+  .status-pending  { background: #8b3a3a; box-shadow: 0 0 8px #8b3a3a44; }
+
+  .scanlines::after {
+    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+
+  .variant-card { transition: border-color 0.2s, background 0.2s; }
+  .variant-card:hover { border-color: #D4AF37 !important; background: #111 !important; }
+  .variant-card.active { border-color: #D4AF37 !important; background: #0f0e08 !important; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; }
+</style>
+</head>
+<body class="scanlines">
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+// ─── STOCK PARTS LIBRARY ─────────────────────────────────────────────────────
+// PT = Foundry stock part. Cross-project. Slash suffix = colour/variant.
+// Color codes: W=White  K=Black  BL=Blue  R=Red
+
+const PARTS = [
+  {
+    code: 'PT001',
+    name: 'Magnet',
+    shape: 'Round',
+    spec: 'Ø 5 mm × 2 mm height',
+    variants: null,  // no colour variants
+  },
+  {
+    code: 'PT002',
+    name: 'Game Stone',
+    shape: 'Round',
+    spec: 'Ø 13.8 mm × 2.4 mm height',
+    variants: [
+      { suffix: 'W',  label: 'White',  color: '#e8e4dc', textDark: true  },
+      { suffix: 'K',  label: 'Black',  color: '#1a1a1a', textDark: false },
+      { suffix: 'BL', label: 'Blue',   color: '#3b6fa0', textDark: false },
+      { suffix: 'R',  label: 'Red',    color: '#8b3a3a', textDark: false },
+    ],
+    variantNote: 'W/K: 2-player games · BL/R: 4-player (colored) games',
+  },
+];
+
+// ─── SEVEN WONDERS PRODUCTS ──────────────────────────────────────────────────
+// SW001–SW028 · sequential, no series prefix · physical only
+// 001-014 = Old Seven Wonders · 015-028 = New Seven Wonders
+
+const WONDERS = [
+  // OLD
+  { name: 'Pyramid',    series: 'Old', p2: { code: 'SW001', status: 'done'     }, p4: { code: 'SW002', status: 'progress' } },
+  { name: 'Gardens',    series: 'Old', p2: { code: 'SW003', status: 'pending'  }, p4: { code: 'SW004', status: 'pending'  } },
+  { name: 'Temple',     series: 'Old', p2: { code: 'SW005', status: 'pending'  }, p4: { code: 'SW006', status: 'pending'  } },
+  { name: 'Statue',     series: 'Old', p2: { code: 'SW007', status: 'done'     }, p4: { code: 'SW008', status: 'pending'  } },
+  { name: 'Mausoleum',  series: 'Old', p2: { code: 'SW009', status: 'progress' }, p4: { code: 'SW010', status: 'pending'  } },
+  { name: 'Colossus',   series: 'Old', p2: { code: 'SW011', status: 'done'     }, p4: { code: 'SW012', status: 'pending'  } },
+  { name: 'Pharos',     series: 'Old', p2: { code: 'SW013', status: 'done'     }, p4: { code: 'SW014', status: 'progress' } },
+  // NEW
+  { name: 'Colosseum',  series: 'New', p2: { code: 'SW015', status: 'pending'  }, p4: { code: 'SW016', status: 'pending'  } },
+  { name: 'Great Wall', series: 'New', p2: { code: 'SW017', status: 'progress' }, p4: { code: 'SW018', status: 'pending'  } },
+  { name: 'Tower',      series: 'New', p2: { code: 'SW019', status: 'pending'  }, p4: { code: 'SW020', status: 'pending'  } },
+  { name: 'Citadel',    series: 'New', p2: { code: 'SW021', status: 'pending'  }, p4: { code: 'SW022', status: 'pending'  } },
+  { name: 'Cathedral',  series: 'New', p2: { code: 'SW023', status: 'pending'  }, p4: { code: 'SW024', status: 'pending'  } },
+  { name: 'Palace',     series: 'New', p2: { code: 'SW025', status: 'pending'  }, p4: { code: 'SW026', status: 'pending'  } },
+  { name: 'Skyscraper', series: 'New', p2: { code: 'SW027', status: 'done'     }, p4: { code: 'SW028', status: 'progress' } },
+];
+
+const STATUS_LABEL = { done: 'Production Ready', progress: 'In Progress', pending: 'Pending' };
+const STATUS_COLOR = { done: '#4a7c59', progress: '#b8860b', pending: '#5a3535' };
+
+// ─── SHARED COMPONENTS ───────────────────────────────────────────────────────
+
+const StatusDot = ({ status }) => (
+  <span className={`inline-block w-2 h-2 rounded-full flex-shrink-0 status-${status}`}></span>
+);
+
+const Divider = ({ label }) => (
+  <div className="flex items-center gap-3 mb-2 mt-6">
+    <span className="text-[8px] font-mono text-gray-700 uppercase tracking-[0.3em]">{label}</span>
+    <div className="flex-1 h-[1px] bg-[#1a1a1a]"></div>
+  </div>
+);
+
+// ─── PARTS PANEL ─────────────────────────────────────────────────────────────
+
+const PartsPanel = ({ wonder, variantKey, variantData }) => {
+  const label = variantKey === 'p2' ? '2 Player · Physical' : '4 Player · Physical';
+  const is4p = variantKey === 'p4';
+
+  // Parts used by this variant (placeholder — quantities TBD)
+  const usedParts = [
+    { part: PARTS[0], qty: '—', note: 'qty TBD' },
+    { part: PARTS[1], variants: is4p
+        ? [PARTS[1].variants[2], PARTS[1].variants[3]]   // BL, R for 4P
+        : [PARTS[1].variants[0], PARTS[1].variants[1]],  // W, K for 2P
+      qty: '—', note: 'qty TBD' },
+  ];
+
+  return (
+    <div className="border border-[#D4AF37]/30 bg-[#09090a] p-5 mt-1">
+      <div className="flex items-start justify-between mb-5">
+        <div>
+          <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Works · Seven Wonders</p>
+          <h3 className="brand-font text-[#D4AF37] text-base uppercase tracking-widest">{wonder.name}</h3>
+          <p className="text-[10px] text-gray-600 font-mono mt-0.5">{label}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[8px] text-gray-700 uppercase tracking-widest mb-1">Foundry No.</p>
+          <p className="font-mono text-[#D4AF37] text-xl font-bold">{variantData.code}</p>
+          <div className="flex items-center gap-1.5 justify-end mt-1">
+            <StatusDot status={variantData.status} />
+            <span className="text-[9px] font-mono" style={{ color: STATUS_COLOR[variantData.status] }}>{STATUS_LABEL[variantData.status]}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bill of Materials */}
+      <div className="border-t border-[#1a1a1a] pt-4">
+        <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">Bill of Materials</p>
+        <div className="flex flex-col gap-2">
+
+          {/* Magnet */}
+          <div className="flex items-center justify-between border border-[#1a1a1a] bg-[#050505] px-3 py-2">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[#D4AF37] text-xs font-bold">PT001</span>
+              <div>
+                <p className="text-gray-300 text-[11px] font-mono">Magnet · Round</p>
+                <p className="text-gray-700 text-[9px] font-mono">Ø 5 mm × 2 mm</p>
+              </div>
+            </div>
+            <span className="text-gray-700 font-mono text-[10px]">qty TBD</span>
+          </div>
+
+          {/* Game Stone with variants */}
+          <div className="border border-[#1a1a1a] bg-[#050505]">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-[#111]">
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-[#D4AF37] text-xs font-bold">PT002</span>
+                <div>
+                  <p className="text-gray-300 text-[11px] font-mono">Game Stone · Round</p>
+                  <p className="text-gray-700 text-[9px] font-mono">Ø 13.8 mm × 2.4 mm</p>
+                </div>
+              </div>
+              <span className="text-gray-700 font-mono text-[10px]">qty TBD</span>
+            </div>
+            {/* Colour variants for this player count */}
+            <div className="flex gap-2 px-3 py-2">
+              {(is4p
+                ? PARTS[1].variants.filter(v => v.suffix === 'BL' || v.suffix === 'R')
+                : PARTS[1].variants.filter(v => v.suffix === 'W' || v.suffix === 'K')
+              ).map(v => (
+                <div key={v.suffix} className="flex items-center gap-1.5 border border-[#222] px-2 py-1">
+                  <div className="w-3 h-3 rounded-full border border-[#333]" style={{ background: v.color }}></div>
+                  <span className="font-mono text-[10px] text-gray-400">PT002/<span className="text-[#D4AF37]">{v.suffix}</span></span>
+                  <span className="font-mono text-[9px] text-gray-700">· {v.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Placeholder for undefined parts */}
+          <div className="border border-dashed border-[#1a1a1a] px-3 py-2 text-center">
+            <p className="text-gray-800 font-mono text-[9px] uppercase tracking-widest">Further parts not yet defined · {variantData.code}A · {variantData.code}B ···</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── WONDER ROW ──────────────────────────────────────────────────────────────
+
+const VariantBtn = ({ label, code, status, active, onClick }) => (
+  <button onClick={onClick}
+    className={`variant-card border text-left p-3 w-full ${active ? 'active border-[#D4AF37]' : 'border-[#1e1e1e] bg-[#0a0a0a]'}`}>
+    <p className="text-[8px] text-gray-700 uppercase tracking-[0.18em] mb-1">{label}</p>
+    <p className={`font-mono text-xs font-bold mb-2 ${active ? 'text-[#D4AF37]' : 'text-gray-400'}`}>{code}</p>
+    <div className="flex items-center gap-1.5">
+      <StatusDot status={status} />
+      <span className="text-[8px] font-mono" style={{ color: STATUS_COLOR[status] }}>{STATUS_LABEL[status]}</span>
+    </div>
+  </button>
+);
+
+const WonderRow = ({ wonder, showDivider }) => {
+  const [active, setActive] = useState(null);
+  const toggle = (key) => setActive(prev => prev === key ? null : key);
+  return (
+    <div>
+      {showDivider && <Divider label="New Seven Wonders" />}
+      <div className="border border-[#1a1a1a] bg-[#050505] mb-1">
+        <div className="grid grid-cols-3 items-center gap-2 p-2.5">
+          <div className="flex items-center gap-2">
+            <div className="w-[3px] h-6 bg-[#D4AF37]/20 flex-shrink-0"></div>
+            <span className="brand-font text-[11px] text-gray-300 uppercase tracking-wider">{wonder.name}</span>
+          </div>
+          <VariantBtn label="2 Player · Physical" code={wonder.p2.code} status={wonder.p2.status} active={active === 'p2'} onClick={() => toggle('p2')} />
+          <VariantBtn label="4 Player · Physical" code={wonder.p4.code} status={wonder.p4.status} active={active === 'p4'} onClick={() => toggle('p4')} />
+        </div>
+        {active && (
+          <div className="px-2.5 pb-2.5">
+            <PartsPanel wonder={wonder} variantKey={active} variantData={wonder[active]} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── WORKS PAGE ──────────────────────────────────────────────────────────────
+
+const WorksPage = () => {
+  const [showParts, setShowParts] = useState(false);
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+
+      {/* Project header */}
+      <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-5 mb-6 flex items-start justify-between">
+        <div>
+          <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Works · Active Project</p>
+          <h2 className="brand-font text-[#D4AF37] text-xl uppercase tracking-widest mb-1">Seven Wonders</h2>
+          <p className="text-gray-600 text-[11px] font-mono">Physical game component fabrication · SW001–SW028</p>
+        </div>
+        <div className="flex flex-col gap-1.5 items-end">
+          <div className="flex items-center gap-2"><StatusDot status="done"/><span className="text-[9px] font-mono text-gray-600">Production Ready</span></div>
+          <div className="flex items-center gap-2"><StatusDot status="progress"/><span className="text-[9px] font-mono text-gray-600">In Progress</span></div>
+          <div className="flex items-center gap-2"><StatusDot status="pending"/><span className="text-[9px] font-mono text-gray-600">Pending</span></div>
+        </div>
+      </div>
+
+      {/* Stock Parts toggle */}
+      <div className="mb-4">
+        <button onClick={() => setShowParts(p => !p)}
+          className={`flex items-center gap-2 border px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest transition-all ${showParts ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-[#1e1e1e] text-gray-600 hover:border-[#333]'}`}>
+          <span>{showParts ? '▾' : '▸'}</span> Stock Parts Library
+        </button>
+      </div>
+
+      {/* Stock Parts panel */}
+      {showParts && (
+        <div className="border border-[#D4AF37]/20 bg-[#09090a] p-5 mb-6">
+          <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-4">PT — Foundry Stock Parts · Cross-project</p>
+          <div className="flex flex-col gap-3">
+            {PARTS.map(part => (
+              <div key={part.code} className="border border-[#1a1a1a] bg-[#050505]">
+                <div className="flex items-center gap-4 px-4 py-3 border-b border-[#111]">
+                  <span className="font-mono text-[#D4AF37] text-sm font-bold w-16">{part.code}</span>
+                  <div className="flex-1">
+                    <p className="text-gray-200 font-mono text-xs">{part.name} · {part.shape}</p>
+                    <p className="text-gray-600 font-mono text-[10px] mt-0.5">{part.spec}</p>
+                  </div>
+                </div>
+                {part.variants && (
+                  <div className="px-4 py-3">
+                    <p className="text-[9px] text-gray-700 uppercase tracking-widest mb-2">Colour variants</p>
+                    <div className="flex flex-wrap gap-2">
+                      {part.variants.map(v => (
+                        <div key={v.suffix} className="flex items-center gap-2 border border-[#222] px-3 py-1.5">
+                          <div className="w-3.5 h-3.5 rounded-full border border-[#333]" style={{ background: v.color }}></div>
+                          <span className="font-mono text-xs">{part.code}/<span className="text-[#D4AF37] font-bold">{v.suffix}</span></span>
+                          <span className="font-mono text-[10px] text-gray-600">· {v.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {part.variantNote && <p className="text-[9px] text-gray-700 font-mono mt-2 italic">{part.variantNote}</p>}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Column headers */}
+      <div className="grid grid-cols-3 gap-2 px-2.5 mb-1">
+        <div></div>
+        <p className="text-[8px] font-mono text-gray-700 uppercase tracking-widest text-center">2 Player</p>
+        <p className="text-[8px] font-mono text-gray-700 uppercase tracking-widest text-center">4 Player</p>
+      </div>
+
+      <Divider label="Old Seven Wonders · SW001–SW014" />
+      {WONDERS.map((w, i) => (
+        <WonderRow key={w.name} wonder={w} showDivider={i === 7} />
+      ))}
+
+    </div>
+  );
+};
+
+// ─── LABS PAGE ───────────────────────────────────────────────────────────────
+
+const LabsPage = () => (
+  <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-5 mb-8 flex items-start justify-between">
+      <div>
+        <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Labs · Active Research</p>
+        <h2 className="brand-font text-[#D4AF37] text-xl uppercase tracking-widest mb-1">Molecular Gastronomy Research</h2>
+        <p className="text-gray-600 text-[11px] font-mono">Experimental food science · Allmer Snacks division</p>
+      </div>
+      <div className="border border-[#D4AF37]/30 px-3 py-1 flex-shrink-0">
+        <span className="text-[9px] font-mono text-[#D4AF37] uppercase tracking-widest">Lab Active</span>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+      {[
+        { code: 'LAB-MGR-001', title: 'Texture Engineering', status: 'progress', desc: 'Novel texture profiles through hydrocolloid systems and controlled crystallization. Target: game-legal snack components.' },
+        { code: 'LAB-MGR-002', title: 'Flavour Encapsulation', status: 'progress', desc: 'Microencapsulation of volatile aroma compounds for extended shelf-stable flavour release in ambient-stored products.' },
+        { code: 'LAB-MGR-003', title: 'Maillard Mapping', status: 'pending', desc: 'Systematic documentation of reaction variables across Foundry production temperatures for repeatable browning outcomes.' },
+        { code: 'LAB-MGR-004', title: 'Botanical Extraction', status: 'pending', desc: 'Cold and ultrasonic extraction of functional botanicals. Pipeline feeding Allmer Snacks product formulation.' },
+      ].map(item => (
+        <div key={item.code} className="border border-[#1a1a1a] bg-[#050505] p-5">
+          <p className="font-mono text-[9px] text-gray-700 mb-2">{item.code}</p>
+          <h4 className="brand-font text-[#D4AF37] text-sm uppercase tracking-wider mb-2">{item.title}</h4>
+          <p className="text-gray-500 text-[11px] font-mono leading-relaxed mb-3">{item.desc}</p>
+          <div className="flex items-center gap-1.5">
+            <StatusDot status={item.status} />
+            <span className="text-[9px] font-mono" style={{ color: STATUS_COLOR[item.status] }}>{STATUS_LABEL[item.status]}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">Research Mandate</p>
+      <p className="text-gray-500 text-[11px] font-mono leading-relaxed">
+        Foundry Labs does not produce to brief. It investigates, prototypes, and encodes discoveries into Foundry's
+        production standards — feeding Works with capabilities that did not exist before. Molecular gastronomy research
+        directly informs Allmer Snacks product formulation and Foundry Works production parameters.
+      </p>
+    </div>
+  </div>
+);
+
+// ─── APP ─────────────────────────────────────────────────────────────────────
+
+const App = () => {
+  const [tab, setTab] = useState('works');
+  return (
+    <div className="min-h-screen bg-[#080808]">
+
+      <header className="border-b border-[#1a1a1a] bg-[#050505] sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 h-12 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rotate-45 bg-[#D4AF37]" style={{boxShadow:'0 0 6px #D4AF37'}}></div>
+              <span className="brand-font text-[#D4AF37] text-sm uppercase tracking-[0.3em]">Foundry</span>
+            </div>
+            <span className="text-gray-800 font-mono text-[9px]">/ Allmer Group</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {['works','labs'].map(t => (
+              <button key={t} onClick={() => setTab(t)}
+                className={`px-4 py-1.5 text-[10px] font-mono uppercase tracking-[0.2em] border transition-all ${
+                  tab === t ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-gray-600 hover:text-gray-400'
+                }`}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      <div className="border-b border-[#111] bg-[#050505]">
+        <div className="max-w-4xl mx-auto px-4 py-2">
+          <span className="text-[9px] font-mono text-gray-700 uppercase tracking-widest">
+            {tab === 'works' ? 'Foundry Works — Precision Fabrication' : 'Foundry Labs — Research & Development'}
+          </span>
+        </div>
+      </div>
+
+      <main className="pb-24">
+        {tab === 'works' ? <WorksPage /> : <LabsPage />}
+      </main>
+
+      <footer className="fixed bottom-0 w-full border-t border-[#111] bg-[#050505] py-2 text-center">
+        <span className="font-mono text-[9px] text-gray-800 uppercase tracking-widest">© Allmer Group — Foundry Internal — Confidential</span>
+      </footer>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
