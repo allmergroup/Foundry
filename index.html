@@ -505,45 +505,299 @@ const ExchangePage = () => (
   </div>
 );
 
+// ─── HOME PAGE ───────────────────────────────────────────────────────────────
+
+const HomePage = ({ setTab }) => (
+  <div className="max-w-4xl mx-auto px-4 py-12">
+
+    <div className="mb-14 text-center">
+      <div className="flex items-center justify-center gap-3 mb-6">
+        <div className="h-[1px] w-16 bg-[#D4AF37]/20"></div>
+        <div className="w-2 h-2 rotate-45 bg-[#D4AF37]" style={{boxShadow:'0 0 8px #D4AF37'}}></div>
+        <div className="h-[1px] w-16 bg-[#D4AF37]/20"></div>
+      </div>
+      <h1 className="brand-font text-[#D4AF37] text-3xl uppercase tracking-[0.4em] mb-4">Foundry</h1>
+      <p className="text-gray-600 text-[11px] font-mono max-w-lg mx-auto leading-relaxed">
+        The operational backbone of Allmer Group. Three divisions — Works, Labs, Exchange — forge the physical,
+        the experimental, and the digital. One mark certifies it all.
+      </p>
+    </div>
+
+    <div className="mb-10">
+      <p className="text-[9px] font-mono text-gray-700 uppercase tracking-[0.3em] mb-4">Divisions</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {[
+          { key: 'works',    name: 'Foundry Works',    sub: 'Precision Fabrication',  desc: 'Manufactures Allmer products and partner goods to exacting standards. First active project: Seven Wonders game components.' },
+          { key: 'labs',     name: 'Foundry Labs',     sub: 'Research & Development', desc: 'Physical experimentation — molecular gastronomy, materials science, applied R&D. Feeds Works with capabilities that did not exist before.' },
+          { key: 'exchange', name: 'Foundry Exchange', sub: 'Digital Ventures',       desc: 'Networked, software-led experiments forged fast and protected when they catch. Current experiment: Network.' },
+        ].map(d => (
+          <button key={d.key} onClick={() => setTab(d.key)}
+            className="border border-[#1a1a1a] bg-[#050505] hover:border-[#D4AF37] hover:bg-[#0f0e08] transition-all text-left p-5 group w-full">
+            <p className="brand-font text-[#D4AF37] text-xs uppercase tracking-widest mb-1">{d.name}</p>
+            <p className="text-gray-700 text-[9px] font-mono italic mb-3">{d.sub}</p>
+            <p className="text-gray-600 text-[10px] font-mono leading-relaxed mb-3">{d.desc}</p>
+            <p className="text-[9px] font-mono text-gray-800 group-hover:text-[#D4AF37] transition-colors">Enter →</p>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <p className="text-[9px] font-mono text-gray-700 uppercase tracking-[0.3em] mb-4">Projects</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <button onClick={() => setTab('mark')}
+          className="border border-[#1a1a1a] bg-[#050505] hover:border-[#D4AF37] hover:bg-[#0f0e08] transition-all text-left p-5 group w-full">
+          <p className="brand-font text-[#D4AF37] text-xs uppercase tracking-widest mb-1">Foundry Mark</p>
+          <p className="text-gray-700 text-[9px] font-mono italic mb-3">Authentication Standard</p>
+          <p className="text-gray-600 text-[10px] font-mono leading-relaxed mb-3">
+            The certification mark for objects made by human hands. Material fingerprinting at scale.
+            In an AI age, physical creation gains irreducible worth — Foundry Mark makes that worth provable.
+          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <StatusDot status="progress" />
+              <span className="text-[9px] font-mono" style={{color: STATUS_COLOR.progress}}>{STATUS_LABEL.progress}</span>
+            </div>
+            <span className="text-[9px] font-mono text-gray-800 group-hover:text-[#D4AF37] transition-colors">View spec →</span>
+          </div>
+        </button>
+        <a href="https://allmergroup.github.io/Network/" target="_blank" rel="noopener noreferrer"
+          className="border border-[#1a1a1a] bg-[#050505] hover:border-[#D4AF37] hover:bg-[#0f0e08] transition-all text-left p-5 group block">
+          <div className="flex items-start justify-between mb-1">
+            <p className="brand-font text-[#D4AF37] text-xs uppercase tracking-widest">Network</p>
+            <span className="text-[9px] font-mono text-gray-700 group-hover:text-[#D4AF37] transition-colors">↗</span>
+          </div>
+          <p className="text-gray-700 text-[9px] font-mono italic mb-3">Foundry Exchange · EXC-001</p>
+          <p className="text-gray-600 text-[10px] font-mono leading-relaxed mb-3">
+            A physical-first social game. Connect only by meeting in person.
+            A proximity handshake colours a sepia world map into watercolour as your human reach grows.
+          </p>
+          <div className="flex items-center gap-1.5">
+            <StatusDot status="progress" />
+            <span className="text-[9px] font-mono" style={{color: STATUS_COLOR.progress}}>{STATUS_LABEL.progress}</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+);
+
+// ─── MARK PAGE ────────────────────────────────────────────────────────────────
+
+const MarkPage = () => (
+  <div className="max-w-4xl mx-auto px-4 py-8">
+
+    <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-5 mb-6 flex items-start justify-between">
+      <div>
+        <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Mark · Specification v1.0</p>
+        <h2 className="brand-font text-[#D4AF37] text-xl uppercase tracking-widest mb-1">Authentication Standard</h2>
+        <p className="text-gray-600 text-[11px] font-mono">Physical provenance · material fingerprinting · human-made certification</p>
+      </div>
+      <div className="border border-[#D4AF37]/30 px-3 py-1 flex-shrink-0">
+        <span className="text-[9px] font-mono text-[#D4AF37] uppercase tracking-widest">Spec v1.0</span>
+      </div>
+    </div>
+
+    {/* Thesis */}
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5 mb-3">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">The Thesis</p>
+      <p className="text-gray-400 text-[11px] font-mono leading-relaxed mb-3">
+        In an age when AI can generate any image, text, or design on demand, objects made by human hands
+        from physical materials gain a new and irreducible worth. An oil painter's canvas, a woodworker's
+        joinery, a ceramicist's glaze — these cannot be AI-generated, because the physical medium is the proof.
+        The grain of the wood is not a style. It is a fact.
+      </p>
+      <p className="text-gray-400 text-[11px] font-mono leading-relaxed mb-3">
+        But proof requires infrastructure. Right now a handmade object has no standard way to certify its
+        provenance — to make its human origin legible, transferable, and permanently on record. Existing
+        solutions (Aura Blockchain Consortium) serve LVMH-tier conglomerates using QR codes and NFC chips
+        that can be transplanted from an authentic object to a fake. The artisanal market — the painter,
+        the potter, the luthier — is completely unserved.
+      </p>
+      <p className="text-[#D4AF37] text-[11px] font-mono leading-relaxed">
+        Foundry Mark is the infrastructure. The certification mark that makes human-made objects provably,
+        permanently, and transferably so — at any price point, for any maker.
+        Foundry owns the registry. Artists own their work.
+      </p>
+    </div>
+
+    {/* How It Works */}
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5 mb-3">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-4">How It Works</p>
+      <div className="flex flex-col gap-2">
+        {[
+          { step:'01', name:'Register',  code:'MRK-REG',   status:'progress', desc:'The maker scans the object\'s material fingerprint using the Foundry Mark app. For wood: grain pattern hash. For leather: fibre structure. For ceramic: fired surface micro-texture. The physical material generates a cryptographic key inseparable from the object — it cannot be transplanted or cloned.' },
+          { step:'02', name:'Certify',   code:'MRK-CERT',  status:'progress', desc:'A Foundry Mark certificate is issued: unique object code, maker identity, material type, creation date, and the fingerprint hash. A physical mark (stamp, branded seal, or label) is applied to the object. The record is written to the Foundry registry.' },
+          { step:'03', name:'Verify',    code:'MRK-VER',   status:'pending',  desc:'Anyone, anywhere, scans the object with a phone camera via the Foundry Mark app. The surface is re-imaged, the hash recomputed, and matched against the registry. Authentic: confirmed in under ten seconds. Tampered or counterfeit: flagged. No proprietary hardware required for verification.' },
+          { step:'04', name:'Transfer',  code:'MRK-TRF',   status:'pending',  desc:'When the object changes hands, the new owner registers the transfer. The provenance chain grows — every owner, every location, every date — permanently and publicly on record. The object gains history. History compounds value.' },
+          { step:'05', name:'Scale',     code:'MRK-SCALE', status:'pending',  desc:'Registration, certification, and verification run automatically at scale via the Foundry registry API. Partner integrations — galleries, auction houses, e-commerce platforms — query the registry directly. Foundry charges a per-registration fee. Verification is free and open.' },
+        ].map(item => (
+          <div key={item.step} className="border border-[#1a1a1a] bg-[#080808] p-4">
+            <div className="flex items-start gap-4">
+              <span className="brand-font text-[#D4AF37]/25 text-2xl font-bold leading-none flex-shrink-0 w-8">{item.step}</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1.5">
+                  <span className="brand-font text-[#D4AF37] text-[10px] uppercase tracking-widest">{item.name}</span>
+                  <span className="text-gray-700 font-mono text-[9px]">{item.code}</span>
+                  <div className="flex items-center gap-1 ml-auto">
+                    <StatusDot status={item.status} />
+                  </div>
+                </div>
+                <p className="text-gray-500 text-[11px] font-mono leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Material Coverage */}
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5 mb-3">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-4">Material Coverage</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {[
+          { material:'Wood',    method:'Grain pattern imaging',       status:'progress', note:'First implementation. SAE game pieces.' },
+          { material:'Ceramic', method:'Fired surface micro-texture',  status:'pending',  note:'Phase 1 R&D target.' },
+          { material:'Leather', method:'Fibre structure scan',         status:'pending',  note:'Phase 1 R&D target.' },
+          { material:'Stone',   method:'Crystalline variation map',    status:'pending',  note:'Phase 2.' },
+          { material:'Textile', method:'Thread intersection hash',     status:'pending',  note:'Phase 2.' },
+          { material:'Paper',   method:'Fibre density imaging',        status:'pending',  note:'Phase 2. Fine art prints, editions.' },
+        ].map(m => (
+          <div key={m.material} className="border border-[#1a1a1a] bg-[#080808] p-3">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <StatusDot status={m.status} />
+              <span className="brand-font text-[#D4AF37] text-[10px] uppercase tracking-wider">{m.material}</span>
+            </div>
+            <p className="text-gray-600 text-[9px] font-mono mb-1">{m.method}</p>
+            <p className="text-gray-700 text-[9px] font-mono italic">{m.note}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Infrastructure Model */}
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5 mb-3">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-4">Infrastructure Model</p>
+      <div className="flex flex-col gap-2">
+        {[
+          { owner:'Allmer Group',     role:'Mark Ownership',          desc:'The Foundry Mark certification mark is owned by the Group — not a subsidiary. Neutrality is the credential. A certifier who manufactures products in the category it certifies cannot be trusted. The mark sits above the studios.' },
+          { owner:'Foundry Labs',     role:'Methodology & Patents',   desc:'Labs develops and patents the material fingerprinting methodology per material type. Scanning process, hash generation algorithm, and material-specific calibration protocols are Foundry IP. Patent filing precedes market open.' },
+          { owner:'Foundry Exchange', role:'Software Infrastructure', desc:'Exchange builds and maintains the registry database, artisan registration portal, consumer verification app, and partner API. The software layer scales automatically. Foundry charges per registration; verification queries are free.' },
+          { owner:'Foundry Works',    role:'First Client',            desc:'Every SAE wooden game piece is registered before it leaves Works. This is the proof of concept and the seed corpus. The registry is non-empty on day one. Works validates the methodology under real production conditions.' },
+        ].map(row => (
+          <div key={row.owner} className="border border-[#1a1a1a] bg-[#080808] px-4 py-3 flex gap-4 items-start">
+            <div className="flex-shrink-0 w-36">
+              <p className="brand-font text-[#D4AF37] text-[10px] uppercase tracking-wider leading-tight">{row.owner}</p>
+              <p className="text-gray-700 text-[9px] font-mono italic mt-0.5">{row.role}</p>
+            </div>
+            <p className="text-gray-500 text-[11px] font-mono leading-relaxed flex-1">{row.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Roadmap */}
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5 mb-3">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-4">Roadmap</p>
+      <div className="flex flex-col gap-2">
+        {[
+          { phase:'Phase 0', name:'Internal Proof',  status:'progress', desc:'Register all SAE wooden game components via Foundry Works. Validate wood grain fingerprinting methodology. Establish hash accuracy benchmarks. Non-empty registry on day one.' },
+          { phase:'Phase 1', name:'Labs R&D',        status:'progress', desc:'Develop and patent material fingerprinting for wood, ceramic, and leather. Define scanning calibration standard. File IP before market open.' },
+          { phase:'Phase 2', name:'Exchange Build',  status:'pending',  desc:'Registry infrastructure, artisan registration portal, consumer verification app. Phone-camera verification is the target — no proprietary hardware required for the buyer.' },
+          { phase:'Phase 3', name:'Market Open',     status:'pending',  desc:'Foundry Mark opens to external makers. Per-registration fee model. First targets: independent woodworkers, ceramicists, fine art printmakers, independent distilleries.' },
+          { phase:'Phase 4', name:'Standard',        status:'pending',  desc:'Buyers begin demanding the mark. Galleries, auction houses, and premium retailers integrate the verification API. The mark self-replicates through buyer preference — the same mechanism as UL certification or Fairtrade.' },
+        ].map(p => (
+          <div key={p.phase} className="border border-[#1a1a1a] bg-[#080808] px-4 py-3 flex gap-4 items-start">
+            <div className="flex-shrink-0 w-20">
+              <p className="font-mono text-[#D4AF37] text-[10px]">{p.phase}</p>
+              <div className="flex items-center gap-1 mt-1.5">
+                <StatusDot status={p.status} />
+                <span className="text-[9px] font-mono" style={{color: STATUS_COLOR[p.status]}}>{STATUS_LABEL[p.status]}</span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <p className="brand-font text-gray-300 text-[10px] uppercase tracking-wider mb-1">{p.name}</p>
+              <p className="text-gray-500 text-[11px] font-mono leading-relaxed">{p.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Mandate */}
+    <div className="border border-[#1a1a1a] bg-[#050505] p-5">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">Mark Mandate</p>
+      <p className="text-gray-500 text-[11px] font-mono leading-relaxed">
+        Foundry Mark does not compete with the objects it certifies. It is the infrastructure beneath them —
+        the registry that makes provenance legible, the mark that makes human origin transferable, the standard
+        that compounds in value as more objects enter the system. When an artist registers their work,
+        they are not licensing a brand. They are entering a permanent record.
+        The mark means one thing: a human made this, Foundry can prove it, and that proof will hold.
+      </p>
+    </div>
+
+  </div>
+);
+
 // ─── APP ─────────────────────────────────────────────────────────────────────
 
+const BREADCRUMB = {
+  home:     '',
+  works:    'Foundry Works — Precision Fabrication',
+  labs:     'Foundry Labs — Research & Development',
+  exchange: 'Foundry Exchange — Digital Ventures',
+  mark:     'Foundry Mark — Authentication Standard',
+};
+
 const App = () => {
-  const [tab, setTab] = useState('works');
+  const [tab, setTab] = useState('home');
   return (
     <div className="min-h-screen bg-[#080808]">
 
       <header className="border-b border-[#1a1a1a] bg-[#050505] sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 h-12 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <button onClick={() => setTab('home')} className="flex items-center gap-4 group">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rotate-45 bg-[#D4AF37]" style={{boxShadow:'0 0 6px #D4AF37'}}></div>
-              <span className="brand-font text-[#D4AF37] text-sm uppercase tracking-[0.3em]">Foundry</span>
+              <div className="w-2 h-2 rotate-45 bg-[#D4AF37] group-hover:opacity-70 transition-opacity" style={{boxShadow:'0 0 6px #D4AF37'}}></div>
+              <span className="brand-font text-[#D4AF37] text-sm uppercase tracking-[0.3em] group-hover:opacity-70 transition-opacity">Foundry</span>
             </div>
             <span className="text-gray-800 font-mono text-[9px]">/ Allmer Group</span>
-          </div>
+          </button>
           <div className="flex items-center gap-1">
             {['works','labs','exchange'].map(t => (
               <button key={t} onClick={() => setTab(t)}
-                className={`px-4 py-1.5 text-[10px] font-mono uppercase tracking-[0.2em] border transition-all ${
+                className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.2em] border transition-all ${
                   tab === t ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-gray-600 hover:text-gray-400'
                 }`}>
                 {t}
               </button>
             ))}
+            <div className="w-[1px] h-4 bg-[#222] mx-1"></div>
+            <button onClick={() => setTab('mark')}
+              className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.2em] border transition-all ${
+                tab === 'mark' ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-gray-600 hover:text-gray-400'
+              }`}>
+              mark
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="border-b border-[#111] bg-[#050505]">
-        <div className="max-w-4xl mx-auto px-4 py-2">
-          <span className="text-[9px] font-mono text-gray-700 uppercase tracking-widest">
-            {tab === 'works' ? 'Foundry Works — Precision Fabrication' : tab === 'labs' ? 'Foundry Labs — Research & Development' : 'Foundry Exchange — Digital Ventures'}
-          </span>
+      {BREADCRUMB[tab] && (
+        <div className="border-b border-[#111] bg-[#050505]">
+          <div className="max-w-4xl mx-auto px-4 py-2">
+            <span className="text-[9px] font-mono text-gray-700 uppercase tracking-widest">{BREADCRUMB[tab]}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       <main className="pb-24">
-        {tab === 'works' ? <WorksPage /> : tab === 'labs' ? <LabsPage /> : <ExchangePage />}
+        {tab === 'home'     && <HomePage setTab={setTab} />}
+        {tab === 'works'    && <WorksPage />}
+        {tab === 'labs'     && <LabsPage />}
+        {tab === 'exchange' && <ExchangePage />}
+        {tab === 'mark'     && <MarkPage />}
       </main>
 
       <footer className="fixed bottom-0 w-full border-t border-[#111] bg-[#050505] py-2 text-center">
