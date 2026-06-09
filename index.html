@@ -76,10 +76,12 @@ const PARTS = [
     shape: 'Cube',
     spec: 'Standard size — spec TBD',
     variants: [
-      { suffix: 'W', label: 'White', color: '#e8e4dc', textDark: true  },
-      { suffix: 'K', label: 'Black', color: '#1a1a1a', textDark: false },
+      { suffix: 'W',  label: 'White', color: '#e8e4dc', textDark: true  },
+      { suffix: 'K',  label: 'Black', color: '#1a1a1a', textDark: false },
+      { suffix: 'BL', label: 'Blue',  color: '#3b6fa0', textDark: false },
+      { suffix: 'R',  label: 'Red',   color: '#8b3a3a', textDark: false },
     ],
-    variantNote: 'W/K: 2-player games',
+    variantNote: 'W/K: 2-player games · BL/R: 4-player (colored) games',
   },
 ];
 
@@ -110,7 +112,7 @@ const WONDERS = [
   { name: 'Citadel',    series: 'New', p2: { code: 'SW021', status: 'pending'  }, p4: { code: 'SW022', status: 'pending'  } },
   { name: 'Cathedral',  series: 'New', p2: { code: 'SW023', status: 'pending'  }, p4: { code: 'SW024', status: 'pending'  } },
   { name: 'Palace',     series: 'New', p2: { code: 'SW025', status: 'pending'  }, p4: { code: 'SW026', status: 'pending'  } },
-  { name: 'Skyscraper', series: 'New', p2: { code: 'SW027', status: 'done'     }, p4: { code: 'SW028', status: 'progress',
+  { name: 'Skyscraper', series: 'New', p2: { code: 'SW027', status: 'pending'  }, p4: { code: 'SW028', status: 'progress',
       stones: ['W', 'K', 'BL', 'R'],
       structure: [
         { code: 'SW028A', name: 'Bottom Structure', dims: '104.4 × 104.4 mm', note: 'Reference plate · widest at base', connection: null },
