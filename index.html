@@ -70,6 +70,17 @@ const PARTS = [
     ],
     variantNote: 'W/K: 2-player games · BL/R: 4-player (colored) games',
   },
+  {
+    code: 'PT003',
+    name: 'Dice',
+    shape: 'Cube',
+    spec: 'Standard size — spec TBD',
+    variants: [
+      { suffix: 'W', label: 'White', color: '#e8e4dc', textDark: true  },
+      { suffix: 'K', label: 'Black', color: '#1a1a1a', textDark: false },
+    ],
+    variantNote: 'W/K: 2-player games',
+  },
 ];
 
 // ─── SEVEN WONDERS PRODUCTS ──────────────────────────────────────────────────
@@ -81,7 +92,14 @@ const WONDERS = [
   { name: 'Pyramid',    series: 'Old', p2: { code: 'SW001', status: 'done'     }, p4: { code: 'SW002', status: 'progress' } },
   { name: 'Gardens',    series: 'Old', p2: { code: 'SW003', status: 'pending'  }, p4: { code: 'SW004', status: 'pending'  } },
   { name: 'Temple',     series: 'Old', p2: { code: 'SW005', status: 'pending'  }, p4: { code: 'SW006', status: 'pending'  } },
-  { name: 'Statue',     series: 'Old', p2: { code: 'SW007', status: 'done'     }, p4: { code: 'SW008', status: 'pending'  } },
+  { name: 'Statue',     series: 'Old', p2: { code: 'SW007', status: 'done',
+      dice: [{ suffix: 'W', label: 'White', qty: 8 }, { suffix: 'K', label: 'Black', qty: 8 }],
+      structure: [
+        { code: 'SW007A', name: 'Game Field',  dims: '135.3 × 135.3 mm', note: 'Base plate',              connection: null },
+        { code: 'SW007B', name: 'Extension',   dims: '73.8 × 73.8 mm',   note: 'Mounts on Game Field',    connection: null },
+        { code: 'SW007C', name: 'Figure',      dims: '73.8 × 73.8 mm',   note: 'Widest part of figure',   connection: null },
+      ],
+    }, p4: { code: 'SW008', status: 'pending'  } },
   { name: 'Mausoleum',  series: 'Old', p2: { code: 'SW009', status: 'progress' }, p4: { code: 'SW010', status: 'pending'  } },
   { name: 'Colossus',   series: 'Old', p2: { code: 'SW011', status: 'done'     }, p4: { code: 'SW012', status: 'pending'  } },
   { name: 'Pharos',     series: 'Old', p2: { code: 'SW013', status: 'done'     }, p4: { code: 'SW014', status: 'progress' } },
@@ -158,41 +176,70 @@ const PartsPanel = ({ wonder, variantKey, variantData }) => {
         <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">Bill of Materials</p>
         <div className="flex flex-col gap-2">
 
-          {/* Magnet */}
-          <div className="flex items-center justify-between border border-[#1a1a1a] bg-[#050505] px-3 py-2">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[#D4AF37] text-xs font-bold">PT001</span>
-              <div>
-                <p className="text-gray-300 text-[11px] font-mono">Magnet · Round</p>
-                <p className="text-gray-700 text-[9px] font-mono">Ø 5 mm × 2 mm</p>
-              </div>
-            </div>
-            <span className="text-gray-700 font-mono text-[10px]">qty TBD</span>
-          </div>
-
-          {/* Game Stone with variants */}
-          <div className="border border-[#1a1a1a] bg-[#050505]">
-            <div className="flex items-center justify-between px-3 py-2 border-b border-[#111]">
+          {/* Magnet — only shown when the variant uses magnets */}
+          {(!variantData.structure || variantData.structure.some(p => p.connection === 'magnet')) && (
+            <div className="flex items-center justify-between border border-[#1a1a1a] bg-[#050505] px-3 py-2">
               <div className="flex items-center gap-3">
-                <span className="font-mono text-[#D4AF37] text-xs font-bold">PT002</span>
+                <span className="font-mono text-[#D4AF37] text-xs font-bold">PT001</span>
                 <div>
-                  <p className="text-gray-300 text-[11px] font-mono">Game Stone · Round</p>
-                  <p className="text-gray-700 text-[9px] font-mono">Ø 13.8 mm × 2.4 mm</p>
+                  <p className="text-gray-300 text-[11px] font-mono">Magnet · Round</p>
+                  <p className="text-gray-700 text-[9px] font-mono">Ø 5 mm × 2 mm</p>
                 </div>
               </div>
               <span className="text-gray-700 font-mono text-[10px]">qty TBD</span>
             </div>
-            {/* Colour variants */}
-            <div className="flex flex-wrap gap-2 px-3 py-2">
-              {stoneVariants.map(v => (
-                <div key={v.suffix} className="flex items-center gap-1.5 border border-[#222] px-2 py-1">
-                  <div className="w-3 h-3 rounded-full border border-[#333]" style={{ background: v.color }}></div>
-                  <span className="font-mono text-[10px] text-gray-400">PT002/<span className="text-[#D4AF37]">{v.suffix}</span></span>
-                  <span className="font-mono text-[9px] text-gray-700">· {v.label}</span>
+          )}
+
+          {/* Dice (when defined) — replaces Game Stone */}
+          {variantData.dice ? (
+            <div className="border border-[#1a1a1a] bg-[#050505]">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-[#111]">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[#D4AF37] text-xs font-bold">PT003</span>
+                  <div>
+                    <p className="text-gray-300 text-[11px] font-mono">Dice · Cube</p>
+                    <p className="text-gray-700 text-[9px] font-mono">Spec TBD</p>
+                  </div>
                 </div>
-              ))}
+              </div>
+              <div className="flex flex-wrap gap-2 px-3 py-2">
+                {variantData.dice.map(d => {
+                  const pt = PARTS[2].variants.find(v => v.suffix === d.suffix);
+                  return (
+                    <div key={d.suffix} className="flex items-center gap-1.5 border border-[#222] px-2 py-1">
+                      <div className="w-3 h-3 rounded-sm border border-[#333]" style={{ background: pt ? pt.color : '#888' }}></div>
+                      <span className="font-mono text-[10px] text-gray-400">PT003/<span className="text-[#D4AF37]">{d.suffix}</span></span>
+                      <span className="font-mono text-[9px] text-gray-700">· {d.label}</span>
+                      <span className="font-mono text-[9px] text-[#D4AF37] ml-1">×{d.qty}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Game Stone with variants */
+            <div className="border border-[#1a1a1a] bg-[#050505]">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-[#111]">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[#D4AF37] text-xs font-bold">PT002</span>
+                  <div>
+                    <p className="text-gray-300 text-[11px] font-mono">Game Stone · Round</p>
+                    <p className="text-gray-700 text-[9px] font-mono">Ø 13.8 mm × 2.4 mm</p>
+                  </div>
+                </div>
+                <span className="text-gray-700 font-mono text-[10px]">qty TBD</span>
+              </div>
+              <div className="flex flex-wrap gap-2 px-3 py-2">
+                {stoneVariants.map(v => (
+                  <div key={v.suffix} className="flex items-center gap-1.5 border border-[#222] px-2 py-1">
+                    <div className="w-3 h-3 rounded-full border border-[#333]" style={{ background: v.color }}></div>
+                    <span className="font-mono text-[10px] text-gray-400">PT002/<span className="text-[#D4AF37]">{v.suffix}</span></span>
+                    <span className="font-mono text-[9px] text-gray-700">· {v.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Placeholder when no structure is defined */}
           {!variantData.structure && (
