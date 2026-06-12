@@ -164,19 +164,39 @@ const PARTS = [
 // SW001–SW028 · sequential, no series prefix · physical only
 // 001-014 = Old Seven Wonders · 015-028 = New Seven Wonders
 
+const GH_BASE = 'https://github.com/allmergroup/Foundry/blob/main/Foundry%20Works%20Files';
+const GH_RULES = `${GH_BASE}/Game%20Rules`;
+
 const WONDERS = [
   // OLD
-  { name: 'Pyramid',    series: 'Old', p2: { code: 'SW001', status: 'done'     }, p4: { code: 'SW002', status: 'progress' } },
+  { name: 'Pyramid', series: 'Old',
+    rulebook: { file: 'SW001_Pyramid_Rules.md', pages: 6 },
+    p2: { code: 'SW001', status: 'done',
+      worksFolder: 'SW001_Pyramid_2P', worksVersion: 'B6',
+      worksFiles: [
+        { code: 'SW001A', name: 'Bottom',        file: 'SW001A_Bottom_B6.stl',           ver: 'B6' },
+        { code: 'SW001B', name: 'Top Extension', file: 'SW001B_TopExtension_B6.stl',      ver: 'B6' },
+        { code: 'SW001C', name: 'Top',           file: 'SW001C_Top_B3.stl',              ver: 'B3' },
+      ],
+    }, p4: { code: 'SW002', status: 'progress' } },
   { name: 'Gardens',    series: 'Old', p2: { code: 'SW003', status: 'pending'  }, p4: { code: 'SW004', status: 'pending'  } },
   { name: 'Temple',     series: 'Old', p2: { code: 'SW005', status: 'pending'  }, p4: { code: 'SW006', status: 'pending'  } },
-  { name: 'Statue',     series: 'Old', p2: { code: 'SW007', status: 'done',
+  { name: 'Statue',     series: 'Old',
+    rulebook: { file: 'SW007_Statue_Rules.md', pages: null },
+    p2: { code: 'SW007', status: 'done',
       dice: [{ suffix: 'W', label: 'White', qty: 8 }, { suffix: 'K', label: 'Black', qty: 8 }],
       structure: [
-        { code: 'SW007A', name: 'Game Field',  dims: '135.3 × 135.3 mm', note: 'Base plate',              connection: null },
-        { code: 'SW007B', name: 'Extension',   dims: '73.8 × 73.8 mm',   note: 'Mounts on Game Field',    connection: null },
-        { code: 'SW007C', name: 'Figure',      dims: '73.8 × 73.8 mm',   note: 'Widest part of figure',   connection: null },
+        { code: 'SW007A', name: 'Game Field', dims: '135.3 × 135.3 mm', note: 'Base plate',            connection: null },
+        { code: 'SW007B', name: 'Extension',  dims: '73.8 × 73.8 mm',   note: 'Mounts on Game Field',  connection: null },
+        { code: 'SW007C', name: 'Figure',     dims: '73.8 × 73.8 mm',   note: 'Widest part of figure', connection: null },
       ],
-    }, p4: { code: 'SW008', status: 'pending'  } },
+      worksFolder: 'SW007_Statue_2P', worksVersion: 'C3',
+      worksFiles: [
+        { code: 'SW007A', name: 'Game Field', file: 'SW007A_GameField_C3.stl', ver: 'C3' },
+        { code: 'SW007B', name: 'Extension',  file: 'SW007B_Extension_C3.stl', ver: 'C3' },
+        { code: 'SW007C', name: 'Figure',     file: 'SW007C_Figure_C3.stl',    ver: 'C3' },
+      ],
+    }, p4: { code: 'SW008', status: 'pending' } },
   { name: 'Mausoleum',  series: 'Old', p2: { code: 'SW009', status: 'progress' }, p4: { code: 'SW010', status: 'pending'  } },
   { name: 'Colossus',   series: 'Old', p2: { code: 'SW011', status: 'done'     }, p4: { code: 'SW012', status: 'pending'  } },
   { name: 'Pharos',     series: 'Old', p2: { code: 'SW013', status: 'done'     }, p4: { code: 'SW014', status: 'progress' } },
@@ -187,13 +207,23 @@ const WONDERS = [
   { name: 'Citadel',    series: 'New', p2: { code: 'SW021', status: 'pending'  }, p4: { code: 'SW022', status: 'pending'  } },
   { name: 'Cathedral',  series: 'New', p2: { code: 'SW023', status: 'pending'  }, p4: { code: 'SW024', status: 'pending'  } },
   { name: 'Palace',     series: 'New', p2: { code: 'SW025', status: 'pending'  }, p4: { code: 'SW026', status: 'pending'  } },
-  { name: 'Skyscraper', series: 'New', p2: { code: 'SW027', status: 'pending', magneticBoard: true }, p4: { code: 'SW028', status: 'progress', magneticBoard: true,
+  { name: 'Skyscraper', series: 'New',
+    rulebook: { file: 'SW027_Skyscraper_Rules.md', pages: null },
+    p2: { code: 'SW027', status: 'pending', magneticBoard: true },
+    p4: { code: 'SW028', status: 'progress', magneticBoard: true,
       stones: ['W', 'K', 'BL', 'R'],
       structure: [
         { code: 'SW028A', name: 'Bottom Structure', dims: '104.4 × 104.4 mm', note: 'Reference plate · widest at base', connection: null },
         { code: 'SW028B', name: 'Top Structure',    dims: '84 × 84 mm',       note: 'Glued to Bottom Structure',        connection: 'adhesive' },
         { code: 'SW028C', name: 'Bottom Roof',      dims: '84 × 84 mm',       note: 'Magnets → Top Structure',          connection: 'magnet' },
         { code: 'SW028D', name: 'Top Roof',         dims: 'TBD',              note: 'Magnets → Bottom Roof',            connection: 'magnet' },
+      ],
+      worksFolder: 'SW028_Skyscraper_4P', worksVersion: 'C5',
+      worksFiles: [
+        { code: 'SW028A', name: 'Bottom Structure', file: 'SW028A_BottomStructure_C5.stl', ver: 'C5' },
+        { code: 'SW028B', name: 'Top Structure',    file: 'SW028B_TopStructure_C5.stl',    ver: 'C5' },
+        { code: 'SW028D', name: 'Top Roof',         file: 'SW028D_TopRoof_C3.stl',         ver: 'C3' },
+        { code: '—',      name: 'Door Panel (×4)',  file: 'SW028_DoorPanel_4x_C5.stl',     ver: 'C5' },
       ],
     } },
 ];
@@ -378,6 +408,39 @@ const PartsPanel = ({ wonder, variantKey, variantData }) => {
         </div>
       )}
 
+      {/* 3D Files — rendered when worksFiles defined on the variant */}
+      {variantData.worksFiles && (
+        <div className="border-t border-[#1a1a1a] pt-4 mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em]">
+              3D Files · <span className="text-[#D4AF37]">{variantData.worksVersion}</span>
+            </p>
+            <a href={`${GH_BASE}/${variantData.worksFolder}/${variantData.worksVersion}`}
+              target="_blank" rel="noopener noreferrer"
+              className="text-[9px] font-mono text-gray-700 hover:text-[#D4AF37] transition-colors">
+              Open folder ↗
+            </a>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {variantData.worksFiles.map(f => (
+              <a key={f.file}
+                href={`${GH_BASE}/${variantData.worksFolder}/${variantData.worksVersion}/${f.file}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-between border border-[#1a1a1a] bg-[#050505] px-3 py-2 hover:border-[#D4AF37]/50 transition-colors group">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[#D4AF37] text-[10px] w-14 flex-shrink-0">{f.code}</span>
+                  <span className="font-mono text-gray-400 text-[11px]">{f.name}</span>
+                  {f.ver !== variantData.worksVersion && (
+                    <span className="font-mono text-[9px] text-gray-700 italic">v{f.ver}</span>
+                  )}
+                </div>
+                <span className="font-mono text-[9px] text-gray-700 group-hover:text-[#D4AF37] transition-colors">.stl ↗</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
@@ -404,9 +467,17 @@ const WonderRow = ({ wonder, showDivider }) => {
       {showDivider && <Divider label="New Seven Wonders" />}
       <div className="border border-[#1a1a1a] bg-[#050505] mb-1">
         <div className="grid grid-cols-3 items-center gap-2 p-2.5">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <div className="w-[3px] h-6 bg-[#D4AF37]/20 flex-shrink-0"></div>
-            <span className="brand-font text-[11px] text-gray-300 uppercase tracking-wider">{wonder.name}</span>
+            <div className="min-w-0">
+              <span className="brand-font text-[11px] text-gray-300 uppercase tracking-wider">{wonder.name}</span>
+              {wonder.rulebook && (
+                <a href={`${GH_RULES}/${wonder.rulebook.file}`} target="_blank" rel="noopener noreferrer"
+                  className="block text-[8px] font-mono text-gray-700 hover:text-[#D4AF37] transition-colors mt-0.5 leading-none">
+                  Rules{wonder.rulebook.pages ? ` · ${wonder.rulebook.pages}p` : ''} ↗
+                </a>
+              )}
+            </div>
           </div>
           <VariantBtn label="2 Player · Physical" code={wonder.p2.code} status={wonder.p2.status} active={active === 'p2'} onClick={() => toggle('p2')} />
           <VariantBtn label="4 Player · Physical" code={wonder.p4.code} status={wonder.p4.status} active={active === 'p4'} onClick={() => toggle('p4')} />
