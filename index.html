@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="vendor/babel.min.js"></script>
+<script src="vendor/tailwind.js"></script>
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; background: #080808; color: #e8e4dc; font-family: 'Courier Prime', monospace; }
@@ -228,6 +228,30 @@ const WONDERS = [
     } },
 ];
 
+
+// ─── LANGUAGES ─────────────────────────────────────────────────────────
+
+const LANGUAGES = ['English', 'Portuguese', 'Spanish', 'French', 'German', 'Italian', 'Japanese', 'Korean', 'Chinese'];
+
+// ─── AMERICAN PLAYING CARDS ──────────────────────────────────────────
+// APC001–APC003 · Steel Box · 50 Cards · Game Rules · 10 languages
+
+const AMERICAN_CARDS = [
+  { code: 'APC001', name: 'Standard Edition', status: 'done' },
+  { code: 'APC002', name: 'Presidents Edition' },
+  { code: 'APC003', name: 'States Edition' },
+];
+
+// ─── BELIEVE ──────────────────────────────────────────────────────
+// BLV001–BLV002 · Cardboard Box · 100 Cards · Game Rules · 10 languages
+// Believe is both brand name and series
+
+const BELIEVE = [
+  { code: 'BLV001', name: 'Believe', status: 'done' },
+  { code: 'BLV002', name: 'Believe Traits' },
+];
+
+const BELIEVE_LANGUAGE_STATUS = { German: 'done', English: 'progress', Italian: 'progress', French: 'progress' };
 const STATUS_LABEL = { done: 'Production Ready', progress: 'In Progress', pending: 'Pending' };
 const STATUS_COLOR = { done: '#4a7c59', progress: '#b8860b', pending: '#5a3535' };
 
@@ -244,6 +268,52 @@ const Divider = ({ label }) => (
   </div>
 );
 
+
+// ─── PRODUCT SECTION ────────────────────────────────────────────────
+
+const ProductSection = ({ title, classification, products, showLanguages = true, languageStatuses }) => (
+  <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-5 mt-6 mb-3">
+    <div className="mb-4">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Works · Active Project</p>
+      <h2 className="brand-font text-[#D4AF37] text-xl uppercase tracking-widest mb-1">{title}</h2>
+      <p className="text-gray-600 text-[11px] font-mono mt-1">{classification}</p>
+    </div>
+    <div className="border-t border-[#1a1a1a] pt-4 mb-4">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">Products</p>
+      <div className="flex flex-col gap-2">
+        {products.map(p => (
+          <div key={p.code} className="border border-[#1a1a1a] bg-[#050505] px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[#D4AF37] text-xs font-bold w-20">{p.code}</span>
+              <span className="text-gray-300 text-[11px] font-mono">{p.name}</span>
+            </div>
+            {p.status && (
+              <div className="flex items-center gap-2">
+                <span className={`inline-block w-2 h-2 rounded-full status-${p.status}`}></span>
+                <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: STATUS_COLOR[p.status] }}>{STATUS_LABEL[p.status]}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+    {showLanguages && (
+    <div className="border-t border-[#1a1a1a] pt-4">
+      <p className="text-[9px] text-gray-700 uppercase tracking-[0.2em] mb-3">Languages</p>
+      <div className="flex flex-wrap gap-2">
+        {LANGUAGES.map(lang => (
+          <span key={lang} className="border border-[#222] px-2 py-1 font-mono text-[10px] text-gray-400 flex items-center gap-2">
+            {languageStatuses && languageStatuses[lang] && (
+              <span className={`inline-block w-1.5 h-1.5 rounded-full status-${languageStatuses[lang]}`}></span>
+            )}
+            {lang}
+          </span>
+        ))}
+      </div>
+    </div>
+    )}
+  </div>
+);
 // ─── PARTS PANEL ─────────────────────────────────────────────────────────────
 
 const CONNECTION_ICON = { adhesive: '⬡', magnet: '⊕' };
@@ -587,6 +657,22 @@ const WorksPage = () => {
         <WonderRow key={w.name} wonder={w} showDivider={i === 7} />
       ))}
 
+
+      <Divider label="American Playing Cards · APC001–APC003" />
+      <ProductSection
+        title="American Playing Cards"
+        classification="Steel Box · 50 Cards · Game Rules"
+        products={AMERICAN_CARDS}
+        showLanguages={false}
+      />
+
+      <Divider label="Believe · BLV001–BLV002" />
+      <ProductSection
+        title="Believe"
+        classification="Cardboard Box · 100 Cards · Game Rules"
+        products={BELIEVE}
+        languageStatuses={BELIEVE_LANGUAGE_STATUS}
+      />
     </div>
   );
 };
@@ -940,8 +1026,15 @@ const BREADCRUMB = {
 };
 
 const App = () => {
-  const [tab, setTab] = useState('home');
+  const [tab, setTab] = useState(() => {
+    const hash = window.location.hash.replace(/^#/, '');
+    return ['home','works','labs','exchange','mark','envoy'].includes(hash) ? hash : 'home';
+  });
   const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    window.location.hash = tab === 'home' ? '' : tab;
+  }, [tab]);
 
   useEffect(() => {
     if (isDark) document.documentElement.classList.remove('light-mode');
