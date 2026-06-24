@@ -268,6 +268,19 @@ const Divider = ({ label }) => (
   </div>
 );
 
+const CollapsibleSection = ({ label, children, defaultOpen = false }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <>
+      <div className="flex items-center gap-3 mb-2 mt-6 cursor-pointer select-none" onClick={() => setOpen(o => !o)}>
+        <span className="text-[8px] font-mono text-gray-700 uppercase tracking-[0.3em]">{label}</span>
+        <div className="flex-1 h-[1px] bg-[#1a1a1a]"></div>
+        <span className="text-gray-600 text-[10px] font-mono flex-shrink-0">{open ? '▾' : '▸'}</span>
+      </div>
+      {open && <div>{children}</div>}
+    </>
+  );
+};
 
 // ─── PRODUCT SECTION ────────────────────────────────────────────────
 
@@ -570,109 +583,111 @@ const WorksPage = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
 
-      {/* Project header */}
-      <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-5 mb-6 flex items-start justify-between">
-        <div>
-          <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Works · Active Project</p>
-          <h2 className="brand-font text-[#D4AF37] text-xl uppercase tracking-widest mb-1">Seven Wonders</h2>
-          <p className="text-gray-600 text-[11px] font-mono">Physical game component fabrication · SW001–SW028</p>
-        </div>
-        <div className="flex flex-col gap-1.5 items-end">
-          <div className="flex items-center gap-2"><StatusDot status="done"/><span className="text-[9px] font-mono text-gray-600">Production Ready</span></div>
-          <div className="flex items-center gap-2"><StatusDot status="progress"/><span className="text-[9px] font-mono text-gray-600">In Progress</span></div>
-          <div className="flex items-center gap-2"><StatusDot status="pending"/><span className="text-[9px] font-mono text-gray-600">Pending</span></div>
-        </div>
-      </div>
+      <CollapsibleSection label="American Playing Cards · APC001–APC003">
+        <ProductSection
+          title="American Playing Cards"
+          classification="Steel Box · 50 Cards · Game Rules"
+          products={AMERICAN_CARDS}
+          showLanguages={false}
+        />
+      </CollapsibleSection>
 
-      {/* Stock Parts toggle */}
-      <div className="mb-4">
-        <button onClick={() => setShowParts(p => !p)}
-          className={`flex items-center gap-2 border px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest transition-all ${showParts ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-[#1e1e1e] text-gray-600 hover:border-[#333]'}`}>
-          <span>{showParts ? '▾' : '▸'}</span> Stock Parts Library
-        </button>
-      </div>
+      <CollapsibleSection label="Believe · BLV001–BLV002">
+        <ProductSection
+          title="Believe"
+          classification="Cardboard Box · 100 Cards · Game Rules"
+          products={BELIEVE}
+          languageStatuses={BELIEVE_LANGUAGE_STATUS}
+        />
+      </CollapsibleSection>
 
-      {/* Stock Parts panel */}
-      {showParts && (
-        <div className="border border-[#D4AF37]/20 bg-[#09090a] p-5 mb-6">
-          <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-4">PT — Foundry Stock Parts · Cross-project</p>
-          <div className="flex flex-col gap-3">
-            {PARTS.map(part => (
-              <div key={part.code} className="border border-[#1a1a1a] bg-[#050505]">
-                <div className="flex items-center gap-4 px-4 py-3 border-b border-[#111]">
-                  <span className="font-mono text-[#D4AF37] text-sm font-bold w-16">{part.code}</span>
-                  <div className="flex-1">
-                    <p className="text-gray-200 font-mono text-xs">{part.name} · {part.shape}</p>
-                    <p className="text-gray-600 font-mono text-[10px] mt-0.5">{part.spec}</p>
-                    {part.note && <p className="text-gray-700 font-mono text-[9px] mt-0.5 italic">{part.note}</p>}
-                  </div>
-                  {part.manufacturer && (
-                    <a href={part.manufacturer.url} target="_blank" rel="noopener noreferrer"
-                      className="text-[9px] font-mono text-gray-700 hover:text-[#D4AF37] transition-colors whitespace-nowrap flex-shrink-0">
-                      {part.manufacturer.name} ↗
-                    </a>
-                  )}
-                </div>
-                {part.variants && (
-                  <div className="px-4 py-3">
-                    <p className="text-[9px] text-gray-700 uppercase tracking-widest mb-2">
-                      {part.code === 'PT006' ? 'Finish variants' : 'Colour variants'}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {part.variants.map(v => (
-                        <div key={v.suffix} className="flex items-center gap-2 border border-[#222] px-3 py-1.5">
-                          <div className={`w-3.5 h-3.5 border border-[#333] ${part.code === 'PT003' ? 'rounded-sm' : 'rounded-full'}`} style={{ background: v.color }}></div>
-                          <span className="font-mono text-xs">{part.code}/<span className="text-[#D4AF37] font-bold">{v.suffix}</span></span>
-                          <span className="font-mono text-[10px] text-gray-600">· {v.label}</span>
-                          {v.manufacturer && (
-                            <a href={v.manufacturer.url} target="_blank" rel="noopener noreferrer"
-                              className="font-mono text-[9px] text-gray-700 hover:text-[#D4AF37] transition-colors ml-1">
-                              {v.manufacturer.name} ↗
-                            </a>
-                          )}
-                          {part.code === 'PT006' && !v.manufacturer && (
-                            <span className="font-mono text-[9px] text-gray-800 ml-1">source TBD</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {part.variantNote && <p className="text-[9px] text-gray-700 font-mono mt-2 italic">{part.variantNote}</p>}
-                  </div>
-                )}
-              </div>
-            ))}
+      <CollapsibleSection label="Seven Wonders · SW001–SW028">
+        {/* Project header */}
+        <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-5 mb-6 flex items-start justify-between">
+          <div>
+            <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-1">Foundry Works · Active Project</p>
+            <h2 className="brand-font text-[#D4AF37] text-xl uppercase tracking-widest mb-1">Seven Wonders</h2>
+            <p className="text-gray-600 text-[11px] font-mono">Physical game component fabrication · SW001–SW028</p>
+          </div>
+          <div className="flex flex-col gap-1.5 items-end">
+            <div className="flex items-center gap-2"><StatusDot status="done"/><span className="text-[9px] font-mono text-gray-600">Production Ready</span></div>
+            <div className="flex items-center gap-2"><StatusDot status="progress"/><span className="text-[9px] font-mono text-gray-600">In Progress</span></div>
+            <div className="flex items-center gap-2"><StatusDot status="pending"/><span className="text-[9px] font-mono text-gray-600">Pending</span></div>
           </div>
         </div>
-      )}
 
-      {/* Column headers */}
-      <div className="grid grid-cols-3 gap-2 px-2.5 mb-1">
-        <div></div>
-        <p className="text-[8px] font-mono text-gray-700 uppercase tracking-widest text-center">2 Player</p>
-        <p className="text-[8px] font-mono text-gray-700 uppercase tracking-widest text-center">4 Player</p>
-      </div>
+        {/* Stock Parts toggle */}
+        <div className="mb-4">
+          <button onClick={() => setShowParts(p => !p)}
+            className={`flex items-center gap-2 border px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest transition-all ${showParts ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-[#1e1e1e] text-gray-600 hover:border-[#333]'}`}>
+            <span>{showParts ? '▾' : '▸'}</span> Stock Parts Library
+          </button>
+        </div>
 
-      <Divider label="Old Seven Wonders · SW001–SW014" />
-      {WONDERS.map((w, i) => (
-        <WonderRow key={w.name} wonder={w} showDivider={i === 7} />
-      ))}
+        {/* Stock Parts panel */}
+        {showParts && (
+          <div className="border border-[#D4AF37]/20 bg-[#09090a] p-5 mb-6">
+            <p className="text-[9px] text-gray-700 uppercase tracking-[0.25em] mb-4">PT — Foundry Stock Parts · Cross-project</p>
+            <div className="flex flex-col gap-3">
+              {PARTS.map(part => (
+                <div key={part.code} className="border border-[#1a1a1a] bg-[#050505]">
+                  <div className="flex items-center gap-4 px-4 py-3 border-b border-[#111]">
+                    <span className="font-mono text-[#D4AF37] text-sm font-bold w-16">{part.code}</span>
+                    <div className="flex-1">
+                      <p className="text-gray-200 font-mono text-xs">{part.name} · {part.shape}</p>
+                      <p className="text-gray-600 font-mono text-[10px] mt-0.5">{part.spec}</p>
+                      {part.note && <p className="text-gray-700 font-mono text-[9px] mt-0.5 italic">{part.note}</p>}
+                    </div>
+                    {part.manufacturer && (
+                      <a href={part.manufacturer.url} target="_blank" rel="noopener noreferrer"
+                        className="text-[9px] font-mono text-gray-700 hover:text-[#D4AF37] transition-colors whitespace-nowrap flex-shrink-0">
+                        {part.manufacturer.name} ↗
+                      </a>
+                    )}
+                  </div>
+                  {part.variants && (
+                    <div className="px-4 py-3">
+                      <p className="text-[9px] text-gray-700 uppercase tracking-widest mb-2">
+                        {part.code === 'PT006' ? 'Finish variants' : 'Colour variants'}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {part.variants.map(v => (
+                          <div key={v.suffix} className="flex items-center gap-2 border border-[#222] px-3 py-1.5">
+                            <div className={`w-3.5 h-3.5 border border-[#333] ${part.code === 'PT003' ? 'rounded-sm' : 'rounded-full'}`} style={{ background: v.color }}></div>
+                            <span className="font-mono text-xs">{part.code}/<span className="text-[#D4AF37] font-bold">{v.suffix}</span></span>
+                            <span className="font-mono text-[10px] text-gray-600">· {v.label}</span>
+                            {v.manufacturer && (
+                              <a href={v.manufacturer.url} target="_blank" rel="noopener noreferrer"
+                                className="font-mono text-[9px] text-gray-700 hover:text-[#D4AF37] transition-colors ml-1">
+                                {v.manufacturer.name} ↗
+                              </a>
+                            )}
+                            {part.code === 'PT006' && !v.manufacturer && (
+                              <span className="font-mono text-[9px] text-gray-800 ml-1">source TBD</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {part.variantNote && <p className="text-[9px] text-gray-700 font-mono mt-2 italic">{part.variantNote}</p>}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
+        {/* Column headers */}
+        <div className="grid grid-cols-3 gap-2 px-2.5 mb-1">
+          <div></div>
+          <p className="text-[8px] font-mono text-gray-700 uppercase tracking-widest text-center">2 Player</p>
+          <p className="text-[8px] font-mono text-gray-700 uppercase tracking-widest text-center">4 Player</p>
+        </div>
 
-      <Divider label="American Playing Cards · APC001–APC003" />
-      <ProductSection
-        title="American Playing Cards"
-        classification="Steel Box · 50 Cards · Game Rules"
-        products={AMERICAN_CARDS}
-        showLanguages={false}
-      />
-
-      <Divider label="Believe · BLV001–BLV002" />
-      <ProductSection
-        title="Believe"
-        classification="Cardboard Box · 100 Cards · Game Rules"
-        products={BELIEVE}
-        languageStatuses={BELIEVE_LANGUAGE_STATUS}
-      />
+        {WONDERS.map((w, i) => (
+          <WonderRow key={w.name} wonder={w} showDivider={i === 7} />
+        ))}
+      </CollapsibleSection>
     </div>
   );
 };
@@ -1030,13 +1045,17 @@ const App = () => {
     const hash = window.location.hash.replace(/^#/, '');
     return ['home','works','labs','exchange','mark','envoy'].includes(hash) ? hash : 'home';
   });
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    const stored = localStorage.getItem('foundry-dark');
+    return stored !== null ? stored === 'true' : true;
+  });
 
   useEffect(() => {
     window.location.hash = tab === 'home' ? '' : tab;
   }, [tab]);
 
   useEffect(() => {
+    localStorage.setItem('foundry-dark', isDark);
     if (isDark) document.documentElement.classList.remove('light-mode');
     else         document.documentElement.classList.add('light-mode');
   }, [isDark]);
