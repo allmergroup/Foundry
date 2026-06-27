@@ -107,6 +107,17 @@ const PARTS = [
     variants: null,  // no colour variants
   },
   {
+    code: 'PT007',
+    name: 'Combine Knob',
+    shape: 'Round',
+    spec: 'Ø 5 mm × 2 mm height · same footprint as PT001 Magnet',
+    variants: null,
+    grips: [
+      { mode: 'Mechanical Grip', detail: '+2% draft · press fit' },
+      { mode: 'Glue Grip',       detail: 'hole Ø +1 mm (Ø 6 mm) · glue gap' },
+    ],
+  },
+  {
     code: 'PT002',
     name: 'Game Stone',
     shape: 'Round',
@@ -186,7 +197,7 @@ const WONDERS = [
         { code: 'SW001B', name: 'Top Extension', file: 'SW001B_TopExtension_B6.stl',      ver: 'B6' },
         { code: 'SW001C', name: 'Top',           file: 'SW001C_Top_B3.stl',              ver: 'B3' },
       ],
-    }, p4: { code: 'SW002', status: 'progress' } },
+    }, p4: { code: 'SW002', status: 'done' } },
   { name: 'Gardens',    series: 'Old', p2: { code: 'SW003', status: 'pending'  }, p4: { code: 'SW004', status: 'pending'  } },
   { name: 'Temple',     series: 'Old', p2: { code: 'SW005', status: 'pending'  }, p4: { code: 'SW006', status: 'pending'  } },
   { name: 'Statue',     series: 'Old',
@@ -206,8 +217,8 @@ const WONDERS = [
       ],
     }, p4: { code: 'SW008', status: 'pending' } },
   { name: 'Mausoleum',  series: 'Old', p2: { code: 'SW009', status: 'progress' }, p4: { code: 'SW010', status: 'pending'  } },
-  { name: 'Colossus',   series: 'Old', p2: { code: 'SW011', status: 'done'     }, p4: { code: 'SW012', status: 'pending'  } },
-  { name: 'Pharos',     series: 'Old', p2: { code: 'SW013', status: 'done'     }, p4: { code: 'SW014', status: 'progress' } },
+  { name: 'Colossus',   series: 'Old', p2: { code: 'SW011', status: 'pending'  }, p4: { code: 'SW012', status: 'pending'  } },
+  { name: 'Pharos',     series: 'Old', p2: { code: 'SW013', status: 'done'     }, p4: { code: 'SW014', status: 'pending'  } },
   // NEW
   { name: 'Colosseum',  series: 'New', p2: { code: 'SW015', status: 'pending'  }, p4: { code: 'SW016', status: 'pending'  } },
   { name: 'Great Wall', series: 'New', p2: { code: 'SW017', status: 'progress' }, p4: { code: 'SW018', status: 'pending'  } },
@@ -218,7 +229,7 @@ const WONDERS = [
   { name: 'Skyscraper', series: 'New',
     rulebook: { file: 'SW027_Skyscraper_Rules.md', pages: null },
     p2: { code: 'SW027', status: 'pending', magneticBoard: true },
-    p4: { code: 'SW028', status: 'progress', magneticBoard: true,
+    p4: { code: 'SW028', status: 'done', magneticBoard: true,
       stones: ['W', 'K', 'BL', 'R'],
       structure: [
         { code: 'SW028A', name: 'Bottom Structure', dims: '104.4 × 104.4 mm', note: 'Reference plate · widest at base', connection: null },
@@ -610,7 +621,8 @@ const WonderRow = ({ wonder, showDivider }) => {
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-[3px] h-6 bg-[#D4AF37]/20 flex-shrink-0"></div>
             <div className="min-w-0">
-              <span className="brand-font text-[11px] text-gray-300 uppercase tracking-wider">{wonder.name}</span>
+              <span className={`brand-font text-[11px] uppercase tracking-wider ${(wonder.p2.status === 'done' && wonder.p4.status === 'done') ? '' : 'text-gray-300'}`}
+                style={(wonder.p2.status === 'done' && wonder.p4.status === 'done') ? { color: STATUS_COLOR.done } : undefined}>{wonder.name}</span>
               {wonder.rulebook && (
                 <a href={`${GH_RULES}/${wonder.rulebook.file}`} target="_blank" rel="noopener noreferrer"
                   className="block text-[8px] font-mono text-gray-700 hover:text-[#D4AF37] transition-colors mt-0.5 leading-none">
@@ -785,6 +797,19 @@ const WorksPage = () => {
                           ))}
                         </div>
                         {part.variantNote && <p className="text-[9px] text-gray-700 font-mono mt-2 italic">{part.variantNote}</p>}
+                      </div>
+                    )}
+                    {part.grips && (
+                      <div className="px-4 py-3">
+                        <p className="text-[9px] text-gray-700 uppercase tracking-widest mb-2">Grip configurations</p>
+                        <div className="flex flex-wrap gap-2">
+                          {part.grips.map(g => (
+                            <div key={g.mode} className="flex items-center gap-2 border border-[#222] px-3 py-1.5">
+                              <span className="font-mono text-xs text-[#D4AF37] font-bold">{g.mode}</span>
+                              <span className="font-mono text-[10px] text-gray-600">· {g.detail}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
